@@ -103,6 +103,30 @@ const toggleLifeEventVisibility = (lifeEvent) => {
 
   axios.post(lifeEvent.url.toggle);
 };
+
+const aiSummary = ref(null);
+const loadingAi = ref(false);
+
+const fetchAiSummary = () => {
+  loadingAi.value = true;
+
+  // Extract the Contact ID from the current browser URL (e.g., /vaults/123/contacts/456)
+  const pathParts = window.location.pathname.split('/');
+  const contactId = pathParts[4];
+
+  axios
+    .get(`/api/contacts/${contactId}/summary`)
+    .then((response) => {
+      aiSummary.value = response.data.ai_summary;
+    })
+    .catch((error) => {
+      alert('Failed to fetch AI summary. Please try again later.');
+      console.error(error);
+    })
+    .finally(() => {
+      loadingAi.value = false;
+    });
+};
 </script>
 
 <template>
@@ -113,6 +137,12 @@ const toggleLifeEventVisibility = (lifeEvent) => {
         <Flame class="h-4 w-4" />
 
         <span class="font-semibold"> {{ $t('Life events') }} </span>
+        <button
+          @click="fetchAiSummary"
+          class="ml-4 px-2 py-1 text-xs font-bold bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition">
+          <span v-if="loadingAi">Fetching summary... ⏳</span>
+          <span v-else>✨ Fetch AI Summary</span>
+        </button>
       </div>
       <pretty-button
         :text="$t('Add a life event')"
@@ -122,6 +152,19 @@ const toggleLifeEventVisibility = (lifeEvent) => {
     </div>
 
     <div>
+      <!-- AI Summary -->
+      <div>
+        <div
+          v-if="aiSummary"
+          class="mb-5 p-4 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 shadow-sm">
+          <div class="font-bold text-purple-800 mb-2 flex items-center gap-2">
+            <span>🤖</span> <span>3-line summary from the AI assistant ✨</span>
+          </div>
+          <div class="text-sm text-purple-900 leading-relaxed whitespace-pre-line">
+            {{ aiSummary }}
+          </div>
+        </div>
+      </div>
       <!-- add a timeline event -->
       <create-life-event
         :data="data"
