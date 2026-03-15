@@ -43,7 +43,10 @@ Route::get('/contacts/{contactId}/summary', function ($contactId) {
     foreach ($events as $event) {
         foreach ($event->lifeEvents as $lifeEvent) {
             // It makes the data fetched from the DB into nicely formatted text.
-            $prompt .= "- {$lifeEvent->happened_at}: {$lifeEvent->summary}\n";
+            $label = $lifeEvent->label;
+            $desc = $lifeEvent->summary;
+
+            $prompt .= "- {$lifeEvent->happened_at}: [{$label}] {$desc}\n";
         }
     }
 
