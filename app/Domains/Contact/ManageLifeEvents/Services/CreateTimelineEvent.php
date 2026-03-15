@@ -61,7 +61,7 @@ class CreateTimelineEvent extends BaseService implements ServiceInterface
     {
         $this->timelineEvent = TimelineEvent::create([
             'vault_id' => $this->data['vault_id'],
-            'label' => $this->valueOrNull($this->data, 'summary'),
+            'label' => $this->valueOrNull($this->data, 'label'),
             'started_at' => $this->data['started_at'],
         ]);
     }
